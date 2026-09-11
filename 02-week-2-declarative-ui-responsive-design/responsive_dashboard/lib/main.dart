@@ -33,10 +33,9 @@ class DashboardScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [
-            // Panggil InfoCard buatan lo di sini!
+          children: const [
             InfoCard(title: 'Assignments', value: '8'),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             InfoCard(title: 'Attendance', value: '92%'),
           ],
         ),
@@ -45,7 +44,6 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-// InfoCard buatan lo (Taruh di sini atau di bawah file)
 class InfoCard extends StatelessWidget {
   final String title;
   final String value;
