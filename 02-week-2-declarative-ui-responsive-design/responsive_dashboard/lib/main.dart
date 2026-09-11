@@ -1,112 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
-void main() => runApp(const DashboardApp());
-
-class DashboardApp extends StatefulWidget {
-  const DashboardApp({super.key});
-
-  @override
-  State<DashboardApp> createState() => _DashboardAppState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _DashboardAppState extends State<DashboardApp> {
-  bool isDark = false;
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-      darkTheme: ThemeData(
-        useMaterial3: true,
+      title: 'Student Dashboard',
+      theme: ThemeData(
         brightness: Brightness.dark,
-        colorSchemeSeed: Colors.indigo,
+        useMaterial3: true,
       ),
-      themeMode: isDark ? ThemeMode.dark : ThemeMode.system,
-      home: DashboardPage(
-        isDark: isDark,
-        onDarkChanged: (value) => setState(() => isDark = value),
-      ),
+      home: const DashboardScreen(),
     );
   }
 }
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({
-    required this.isDark,
-    required this.onDarkChanged,
-    super.key,
-  });
-
-  final bool isDark;
-  final ValueChanged<bool> onDarkChanged;
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
-        actions: [
-          Row(
-            children: [
-              Icon(isDark ? Icons.dark_mode : Icons.light_mode),
-              const SizedBox(width: 4),
-              Semantics(
-                label: 'Toggle dark mode',
-                child: CupertinoSwitch(
-                  value: isDark,
-                  onChanged: onDarkChanged,
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
-          ),
-        ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          int crossAxisCount = constraints.maxWidth > 700 ? 4 : 2;
-
-          return GridView.count(
-            crossAxisCount: crossAxisCount,
-            padding: const EdgeInsets.all(16.0),
-            mainAxisSpacing: 16.0,
-            crossAxisSpacing: 16.0,
-            children: const [
-              DashboardCard(title: 'Assignments', value: '8'),
-              DashboardCard(title: 'Attendance', value: '92%'),
-              DashboardCard(title: 'Portfolio', value: 'Ready'),
-              DashboardCard(title: 'Current week', value: '02'),
-            ],
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // Panggil InfoCard buatan lo di sini!
+            InfoCard(title: 'Assignments', value: '8'),
+            const SizedBox(height: 12),
+            InfoCard(title: 'Attendance', value: '92%'),
+          ],
+        ),
       ),
     );
   }
 }
 
-class DashboardCard extends StatelessWidget {
-  const DashboardCard({required this.title, required this.value, super.key});
-
+// InfoCard buatan lo (Taruh di sini atau di bawah file)
+class InfoCard extends StatelessWidget {
   final String title;
   final String value;
 
+  const InfoCard({super.key, required this.title, required this.value});
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 16, color: Colors.grey)),
-            const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text(value, style: Theme.of(context).textTheme.titleLarge),
+        ],
       ),
     );
   }
