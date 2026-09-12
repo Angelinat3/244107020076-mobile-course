@@ -7,33 +7,18 @@ class TodoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todos = ref.watch(todoListProvider);
+    // Memantau provider yang sudah difilter (hanya yang belum selesai)
+    final unfinishedTasks = ref.watch(unfinishedTodoProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('ToDo Riverpod')),
-      body: todos.isEmpty
+      body: unfinishedTasks.isEmpty
           ? const Center(child: Text('No tasks yet'))
           : ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (context, index) => ListTile(
-                leading: Checkbox(
-                  value: todos[index].done,
-                  onChanged: (_) =>
-                      ref.read(todoListProvider.notifier).toggle(index),
-                ),
-                title: Text(
-                  todos[index].title,
-                  style: TextStyle(
-                      decoration: todos[index].done
-                          ? TextDecoration.lineThrough
-                          : null),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () =>
-                      ref.read(todoListProvider.notifier).remove(index),
-                ),
-              ),
+              itemCount: unfinishedTasks.length,
+              itemBuilder: (context, index) {
+                return TodoTile(todo: unfinishedTasks[index]);
+              },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddDialog(context, ref),
@@ -66,6 +51,36 @@ class TodoPage extends ConsumerWidget {
             child: const Text('Add'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TodoTile extends ConsumerWidget {
+  final Todo todo;
+
+  const TodoTile({super.key, required this.todo});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListTile(
+      title: Text(
+        todo.title,
+        style: TextStyle(
+          decoration: todo.done ? TextDecoration.lineThrough : null,
+        ),
+      ),
+      leading: Checkbox(
+        value: todo.done,
+        onChanged: (bool? checked) {
+          ref.read(todoListProvider.notifier).toggle(todo);
+        },
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: () {
+          ref.read(todoListProvider.notifier).remove(todo);
+        },
       ),
     );
   }

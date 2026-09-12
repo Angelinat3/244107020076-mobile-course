@@ -15,14 +15,22 @@ class TodoListNotifier extends Notifier<List<Todo>> {
 
   void add(String title) => state = [...state, Todo(title)];
 
-  void toggle(int index) {
-    final todos = [...state];
-    todos[index] = todos[index].copyWith(done: !todos[index].done);
-    state = todos;
+  void toggle(Todo target) {
+    state = [
+      for (final todo in state)
+        if (todo == target) todo.copyWith(done: !todo.done) else todo
+    ];
   }
 
-  void remove(int index) => state = [...state]..removeAt(index);
+  void remove(Todo target) {
+    state = state.where((todo) => todo != target).toList();
+  }
 }
 
 final todoListProvider =
-NotifierProvider<TodoListNotifier, List<Todo>>(TodoListNotifier.new);
+    NotifierProvider<TodoListNotifier, List<Todo>>(TodoListNotifier.new);
+
+final unfinishedTodoProvider = Provider<List<Todo>>((ref) {
+  final allTodos = ref.watch(todoListProvider);
+  return allTodos.where((todo) => !todo.done).toList();
+});
