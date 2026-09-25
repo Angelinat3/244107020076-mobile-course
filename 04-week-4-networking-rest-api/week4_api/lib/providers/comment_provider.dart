@@ -9,10 +9,13 @@ final commentRepositoryProvider = Provider((ref) {
   return CommentRepository(dio);
 });
 
-// 1. Gunakan AsyncNotifier standar (tanpa kata 'Family' di namanya)
+// 1. Gunakan AsyncNotifier standar, lalu buat constructor untuk menerima parameter (postId)
 class CommentNotifier extends AsyncNotifier<List<Comment>> {
+  CommentNotifier(this.postId);
+  final int postId;
+
   @override
-  Future<List<Comment>> build(int postId) async {
+  Future<List<Comment>> build() async {
     try {
       final repository = ref.watch(commentRepositoryProvider);
       return await repository.fetchComments(postId);
@@ -47,7 +50,7 @@ class CommentNotifier extends AsyncNotifier<List<Comment>> {
   }
 }
 
-// 2. Terapkan .family dan .autoDispose di level provider-nya secara langsung
+// 2. Daftarkan menggunakan AsyncNotifierProvider.autoDispose.family
 final commentsProvider = AsyncNotifierProvider.autoDispose.family<CommentNotifier, List<Comment>, int>(
   CommentNotifier.new,
 );
