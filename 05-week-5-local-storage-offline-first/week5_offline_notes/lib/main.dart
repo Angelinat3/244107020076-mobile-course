@@ -8,8 +8,8 @@ GoRouter(
     return null;
   },
   routes: [
-    GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-    GoRoute(path: '/', builder: (_, __) => const HomePage()),
+    GoRoute(path: '/login', builder: (_, _) => const LoginPage()),
+    GoRoute(path: '/', builder: (_, _) => const HomePage()),
     GoRoute(
       path: '/announcement/:id',
       builder: (_, s) =>
