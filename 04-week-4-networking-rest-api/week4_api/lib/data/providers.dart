@@ -14,6 +14,9 @@ final postRepositoryProvider = Provider<PostRepository>(
 class PostListNotifier extends AsyncNotifier<List<Post>> {
   @override
   Future<List<Post>> build() async {
+    // Exceptions from the repository automatically become AsyncError.
+    // Automatic retry is disabled in the provider declaration below
+    // so errors are final and easy to test.
     final repository = ref.watch(postRepositoryProvider);
     return repository.fetchPosts();
   }
@@ -32,6 +35,9 @@ class PostListNotifier extends AsyncNotifier<List<Post>> {
 final postListProvider =
     AsyncNotifierProvider<PostListNotifier, List<Post>>(
         PostListNotifier.new,
+        // Disable Riverpod 3 automatic retry so errors are final
+        // and testable (otherwise the provider future in tests
+        // would retry and hang).
         retry: (retryCount, error) => null);
 
 String friendlyErrorMessage(Object error) {
@@ -46,11 +52,6 @@ String friendlyErrorMessage(Object error) {
       case DioExceptionType.badResponse:
         final code = error.response?.statusCode;
         if (code == 404) return 'Data not found (404).';
-      case DioExceptionType.connectionError:
-        return 'Cannot reach the server. Check your internet connection.';
-      case DioExceptionType.badResponse:
-        final code = error.response?.statusCode;
-        if (code == 404) return 'Data not found (404).';
         if (code == 401 || code == 403) {
           return 'Access denied ($code). Check your credentials.';
         }
@@ -60,18 +61,4 @@ String friendlyErrorMessage(Object error) {
     }
   }
   return 'An unexpected error occurred: $error';
-}
-
-// === TARUH DI SINI (BARIS PALING BAWAH) ===
-Future<List<Post>> readPostsOnce(ProviderContainer container) async {
-  return await container.read(postListProvider.future);
-}
-
-Future<Object?> readPostsErrorOnce(ProviderContainer container) async {
-  try {
-    await container.read(postListProvider.future);
-    return null;
-  } catch (e) {
-    return e;
-  }
 }
