@@ -62,3 +62,16 @@ String friendlyErrorMessage(Object error) {
   }
   return 'An unexpected error occurred: $error';
 }
+
+Future<List<Post>> readPostsOnce(ProviderContainer container) {
+  return container.read(postListProvider.future);
+}
+
+Future<Object?> readPostsErrorOnce(ProviderContainer container) async {
+  try {
+    await container.read(postListProvider.future);
+    return null;
+  } catch (e) {
+    return e;
+  }
+}
